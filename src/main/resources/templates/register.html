@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Register Patient</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<h1>Register Patient</h1>
+
+<form th:action="@{/register}" th:object="${form}" method="post">
+    <label>
+        Full name
+        <input type="text" th:field="*{fullName}" required>
+    </label>
+
+    <label>
+        Phone
+        <input type="text" th:field="*{phone}" required>
+    </label>
+
+    <label>
+        Doctor
+        <select th:field="*{doctorId}" required>
+            <option th:each="doctor : ${doctors}"
+                    th:value="${doctor.id}"
+                    th:text="${doctor.name} + ' — ' + ${doctor.department.name}"></option>
+        </select>
+    </label>
+
+    <label>
+        Priority
+        <select th:field="*{priority}">
+            <option th:each="p : ${priorities}" th:value="${p}" th:text="${p}"></option>
+        </select>
+    </label>
+
+    <button type="submit">Register</button>
+</form>
+</body>
+</html>

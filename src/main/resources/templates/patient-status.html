@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>My Token Status</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<h1>My Token Status</h1>
+
+<div id="turn-near-banner" class="turn-near-banner" th:style="${status.turnNear} ? 'display:block' : ''">
+    Your turn is almost here — please be ready.
+</div>
+
+<div id="status-container">
+    <p>Doctor: <span id="doctor-name" th:text="${status.doctorName}"></span></p>
+    <p>Token number: <strong id="token-number" th:text="${status.tokenNumber}"></strong></p>
+    <p>Priority: <span id="priority" th:text="${status.priority}"></span></p>
+    <p>Status: <span id="status" th:text="${status.status}"></span></p>
+    <p id="position-line" th:style="${status.position == null} ? 'display:none' : ''">
+        Position in queue: <span id="position" th:text="${status.position}"></span>
+    </p>
+    <p id="eta-line" th:style="${status.estimatedWaitMinutes == null} ? 'display:none' : ''">
+        Estimated wait: <span id="eta">[[${status.estimatedWaitMinutes}]]</span> min
+    </p>
+</div>
+
+<script th:src="@{/webjars/sockjs-client/1.5.1/sockjs.min.js}"></script>
+<script th:src="@{/webjars/stomp-websocket/2.3.4/stomp.min.js}"></script>
+<script th:inline="javascript">
+    const tokenId = /*[[${status.tokenId}]]*/ 0;
+</script>
+<script th:src="@{/js/patient-status.js}"></script>
+</body>
+</html>

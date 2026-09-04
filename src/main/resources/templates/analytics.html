@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Analytics</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<h1>Analytics (last 14 days)</h1>
+
+<h2>By day</h2>
+<p th:if="${#lists.isEmpty(dailyStats)}">No completed consultations yet.</p>
+<table th:unless="${#lists.isEmpty(dailyStats)}">
+    <thead>
+    <tr>
+        <th>Date</th>
+        <th>Patients seen</th>
+        <th>Avg wait (min)</th>
+        <th>Avg consultation (min)</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="d : ${dailyStats}">
+        <td th:text="${d.date}"></td>
+        <td th:text="${d.totalCompleted}"></td>
+        <td th:text="${#numbers.formatDecimal(d.avgWaitMinutes, 1, 1)}"></td>
+        <td th:text="${#numbers.formatDecimal(d.avgConsultationMinutes, 1, 1)}"></td>
+    </tr>
+    </tbody>
+</table>
+
+<h2>By doctor</h2>
+<p th:if="${#lists.isEmpty(doctorStats)}">No completed consultations yet.</p>
+<table th:unless="${#lists.isEmpty(doctorStats)}">
+    <thead>
+    <tr>
+        <th>Doctor</th>
+        <th>Patients seen</th>
+        <th>Avg consultation (min)</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="d : ${doctorStats}">
+        <td th:text="${d.doctorName}"></td>
+        <td th:text="${d.totalCompleted}"></td>
+        <td th:text="${#numbers.formatDecimal(d.avgConsultationMinutes, 1, 1)}"></td>
+    </tr>
+    </tbody>
+</table>
+</body>
+</html>

@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_parameter" th:content="${_csrf.parameterName}"/>
+    <title th:text="${snapshot.doctorName} + ' — Queue'"></title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<h1 th:text="${snapshot.doctorName} + ' — Queue'"></h1>
+
+<p><a th:href="@{/register}">Register patient</a> · <a th:href="@{/analytics}">Analytics</a></p>
+
+<div id="queue-container" th:data-doctor-id="${snapshot.doctorId}">
+    <div id="currently-serving">
+        <h2>Currently serving</h2>
+        <div th:if="${snapshot.currentlyServing != null}">
+            <p>
+                Token <strong th:text="${snapshot.currentlyServing.tokenNumber}"></strong> —
+                <span th:text="${snapshot.currentlyServing.patientName}"></span>
+                (<span th:text="${snapshot.currentlyServing.priority}"></span>)
+            </p>
+            <form method="post" th:action="@{'/tokens/' + ${snapshot.currentlyServing.tokenId} + '/complete'}">
+                <button type="submit">Complete consultation</button>
+            </form>
+        </div>
+        <div th:if="${snapshot.currentlyServing == null}">
+            <p>No patient currently being served.</p>
+            <form th:if="${!#lists.isEmpty(snapshot.waitingTokens)}" method="post"
+                  th:action="@{'/doctors/' + ${snapshot.doctorId} + '/call-next'}">
+                <button type="submit">Call next patient</button>
+            </form>
+        </div>
+    </div>
+
+    <h2>Waiting queue</h2>
+    <p th:if="${#lists.isEmpty(snapshot.waitingTokens)}">No patients waiting.</p>
+
+    <table th:unless="${#lists.isEmpty(snapshot.waitingTokens)}">
+        <thead>
+        <tr>
+            <th>Position</th>
+            <th>Token</th>
+            <th>Patient</th>
+            <th>Priority</th>
+            <th>Est. wait</th>
+            <th>Escalate</th>
+            <th>Cancel</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="t : ${snapshot.waitingTokens}">
+            <td th:text="${t.position}"></td>
+            <td th:text="${t.tokenNumber}"></td>
+            <td th:text="${t.patientName}"></td>
+            <td th:text="${t.priority}"></td>
+            <td th:text="${t.estimatedWaitMinutes} + ' min'"></td>
+            <td>
+                <form method="post" th:action="@{'/tokens/' + ${t.tokenId} + '/escalate'}">
+                    <select name="priority">
+                        <option value="NORMAL" th:selected="${t.priority.name() == 'NORMAL'}">NORMAL</option>
+                        <option value="PRIORITY" th:selected="${t.priority.name() == 'PRIORITY'}">PRIORITY</option>
+                        <option value="EMERGENCY" th:selected="${t.priority.name() == 'EMERGENCY'}">EMERGENCY</option>
+                    </select>
+                    <button type="submit">Set</button>
+                </form>
+            </td>
+            <td>
+                <form method="post" th:action="@{'/tokens/' + ${t.tokenId} + '/cancel'}">
+                    <button type="submit">Cancel</button>
+                </form>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<script th:src="@{/webjars/sockjs-client/1.5.1/sockjs.min.js}"></script>
+<script th:src="@{/webjars/stomp-websocket/2.3.4/stomp.min.js}"></script>
+<script th:inline="javascript">
+    const doctorId = /*[[${snapshot.doctorId}]]*/ 0;
+</script>
+<script th:src="@{/js/dashboard.js}"></script>
+</body>
+</html>

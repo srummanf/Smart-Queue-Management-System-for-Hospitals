@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Token Issued</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<h1>Token Issued</h1>
+
+<p>Patient: <span th:text="${token.patient.fullName}"></span></p>
+<p>Doctor: <span th:text="${token.doctor.name}"></span></p>
+<p>Token number: <strong th:text="${token.tokenNumber}"></strong></p>
+<p>Priority: <span th:text="${token.priority}"></span></p>
+
+<a th:href="@{/register}">Register another patient</a>
+·
+<a th:href="@{/doctors/{id}/dashboard(id=${token.doctor.id})}">View doctor's queue</a>
+·
+<a th:href="@{/patients/{id}(id=${token.id})}">Track this token</a>
+</body>
+</html>

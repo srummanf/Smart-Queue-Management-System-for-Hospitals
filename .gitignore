@@ -1,0 +1,24 @@
+target/
+*.class
+hs_err_pid*.log
+
+# IDE
+.idea/
+*.iml
+.vscode/
+.classpath
+.project
+.settings/
+nbproject/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Local env overrides (never commit real credentials/secrets)
+.env
+application-local.yml
