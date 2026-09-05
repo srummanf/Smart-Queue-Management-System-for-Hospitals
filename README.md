@@ -12,27 +12,34 @@ A real-time hospital token-queue system: staff register patients, doctors work a
 
 ## Table of Contents
 
-1. [Description](#description)
-2. [What Problem This Solves](#what-problem-this-solves)
-3. [Concepts You Need First](#concepts-you-need-first)
-4. [How It All Fits Together](#how-it-all-fits-together)
-5. [Features](#features)
-6. [Tech Stack](#tech-stack)
-7. [Architecture](#architecture)
-8. [Diagrams](#diagrams)
-9. [Repository Map](#repository-map)
-10. [Requirements](#requirements)
-11. [Setup](#setup)
-12. [Run It End to End (Walkthrough)](#run-it-end-to-end-walkthrough)
-13. [Demo Credentials](#demo-credentials)
-14. [Key Routes](#key-routes)
-15. [Testing](#testing)
-16. [Build Steps](#build-steps)
-17. [Roadmap](#roadmap)
-18. [Lessons Learned](#lessons-learned)
-19. [Troubleshooting](#troubleshooting)
-20. [Glossary](#glossary)
-21. [Documentation](#documentation)
+- [Smart Queue Management System for Hospitals](#smart-queue-management-system-for-hospitals)
+  - [Table of Contents](#table-of-contents)
+  - [Description](#description)
+  - [What Problem This Solves](#what-problem-this-solves)
+  - [Concepts You Need First](#concepts-you-need-first)
+  - [How It All Fits Together](#how-it-all-fits-together)
+  - [Features](#features)
+  - [Tech Stack](#tech-stack)
+  - [Architecture](#architecture)
+    - [Data model](#data-model)
+    - [Queue ordering — one definition, everywhere](#queue-ordering--one-definition-everywhere)
+    - [Wait-time estimate](#wait-time-estimate)
+    - [Real-time design](#real-time-design)
+    - [Auth](#auth)
+  - [Diagrams](#diagrams)
+  - [Repository Map](#repository-map)
+  - [Requirements](#requirements)
+  - [Setup](#setup)
+  - [Run It End to End (Walkthrough)](#run-it-end-to-end-walkthrough)
+  - [Demo Credentials](#demo-credentials)
+  - [Key Routes](#key-routes)
+  - [Testing](#testing)
+  - [Build Steps](#build-steps)
+  - [Roadmap](#roadmap)
+  - [Lessons Learned](#lessons-learned)
+  - [Troubleshooting](#troubleshooting)
+  - [Glossary](#glossary)
+  - [Documentation](#documentation)
 
 ## Description
 
@@ -92,19 +99,20 @@ Every state change (register, call-next, complete, cancel, escalate) goes throug
 
 ## Tech Stack
 
-| Layer | Choice |
-|---|---|
-| Language | Java 21 |
-| Framework | Spring Boot 3.3.4 |
-| Build tool | Maven |
-| Web layer | Spring MVC + Thymeleaf (server-rendered) |
-| Frontend | Plain HTML/CSS + a little vanilla JS (STOMP client only) |
-| Real-time | Spring WebSocket (STOMP over SockJS) |
-| Database | PostgreSQL |
-| Data access | Spring Data JPA / Hibernate |
-| Migrations | Flyway |
-| Security | Spring Security (form login) |
-| Tests | JUnit 5 + Mockito |
+
+| Layer       | Choice                                                   |
+| ------------- | ---------------------------------------------------------- |
+| Language    | Java 21                                                  |
+| Framework   | Spring Boot 3.3.4                                        |
+| Build tool  | Maven                                                    |
+| Web layer   | Spring MVC + Thymeleaf (server-rendered)                 |
+| Frontend    | Plain HTML/CSS + a little vanilla JS (STOMP client only) |
+| Real-time   | Spring WebSocket (STOMP over SockJS)                     |
+| Database    | PostgreSQL                                               |
+| Data access | Spring Data JPA / Hibernate                              |
+| Migrations  | Flyway                                                   |
+| Security    | Spring Security (form login)                             |
+| Tests       | JUnit 5 + Mockito                                        |
 
 **Deployment shape:** one Spring Boot jar + one Postgres database. No Docker, Redis, Kafka, or microservices — everything runs as a single app on a single machine, on purpose.
 
@@ -239,15 +247,12 @@ hospital-queue/
    ```sql
    CREATE DATABASE hospital_queue;
    ```
-
 2. Check the connection settings in [`src/main/resources/application.yml`](src/main/resources/application.yml) match your local Postgres (defaults: `localhost:5432`, user/password `postgres`/`postgres`).
-
 3. Run the app — Flyway migrates the schema and seeds demo data automatically on startup:
 
    ```bash
    ./mvnw spring-boot:run
    ```
-
 4. Open [http://localhost:8080/login](http://localhost:8080/login) and sign in with one of the accounts in [`PASSWORDS.md`](PASSWORDS.md).
 
 ## Run It End to End (Walkthrough)
@@ -265,17 +270,18 @@ See [`PASSWORDS.md`](PASSWORDS.md) for the full list of seeded demo accounts (on
 
 ## Key Routes
 
-| Route | Who | Purpose |
-|---|---|---|
-| `GET/POST /register` | STAFF | Register patient, issue token |
-| `GET /doctors/{doctorId}/dashboard` | DOCTOR | Live queue view + call-next/complete |
-| `POST /doctors/{doctorId}/call-next` | DOCTOR | Move next WAITING token to IN_PROGRESS |
-| `POST /tokens/{tokenId}/complete` | DOCTOR | Mark IN_PROGRESS token COMPLETED |
-| `POST /tokens/{tokenId}/cancel` | STAFF, DOCTOR | Cancel a waiting token |
-| `POST /tokens/{tokenId}/escalate` | STAFF | Bump priority of a waiting token |
-| `GET /patients/{tokenId}` | Anyone | Live status/position/ETA page |
-| `GET /analytics` | STAFF | Daily load + avg consultation time |
-| `/ws` | — | STOMP endpoint (SockJS handshake) |
+
+| Route                                | Who           | Purpose                                |
+| -------------------------------------- | --------------- | ---------------------------------------- |
+| `GET/POST /register`                 | STAFF         | Register patient, issue token          |
+| `GET /doctors/{doctorId}/dashboard`  | DOCTOR        | Live queue view + call-next/complete   |
+| `POST /doctors/{doctorId}/call-next` | DOCTOR        | Move next WAITING token to IN_PROGRESS |
+| `POST /tokens/{tokenId}/complete`    | DOCTOR        | Mark IN_PROGRESS token COMPLETED       |
+| `POST /tokens/{tokenId}/cancel`      | STAFF, DOCTOR | Cancel a waiting token                 |
+| `POST /tokens/{tokenId}/escalate`    | STAFF         | Bump priority of a waiting token       |
+| `GET /patients/{tokenId}`            | Anyone        | Live status/position/ETA page          |
+| `GET /analytics`                     | STAFF         | Daily load + avg consultation time     |
+| `/ws`                                | —            | STOMP endpoint (SockJS handshake)      |
 
 This app serves server-rendered HTML, not JSON — there's no separate JSON API to document beyond the routes above.
 
@@ -314,21 +320,25 @@ This project was used to practice: real-time web updates without SPA/polling com
 
 ## Glossary
 
-| Term | Meaning |
-|---|---|
-| **Token** | A single patient's place in a doctor's queue — has a status, priority, and timestamps. |
-| **Priority tier** | `NORMAL`, `PRIORITY`, or `EMERGENCY` — determines queue order ahead of arrival time. |
-| **STOMP** | A simple text-based messaging protocol used over WebSocket to send/receive queue updates. |
-| **SockJS** | A fallback library that emulates WebSockets when a browser/network can't use them directly. |
+
+| Term                 | Meaning                                                                                          |
+| ---------------------- | -------------------------------------------------------------------------------------------------- |
+| **Token**            | A single patient's place in a doctor's queue — has a status, priority, and timestamps.          |
+| **Priority tier**    | `NORMAL`, `PRIORITY`, or `EMERGENCY` — determines queue order ahead of arrival time.            |
+| **STOMP**            | A simple text-based messaging protocol used over WebSocket to send/receive queue updates.        |
+| **SockJS**           | A fallback library that emulates WebSockets when a browser/network can't use them directly.      |
 | **Flyway migration** | A versioned SQL file (`V1__...sql`) that Flyway runs once, in order, to build/update the schema. |
-| **STAFF / DOCTOR** | The two authenticated roles; patients have no account or role at all. |
+| **STAFF / DOCTOR**   | The two authenticated roles; patients have no account or role at all.                            |
 
 ## Documentation
 
-| Document | Contents |
-|---|---|
-| [`PRD.md`](PRD.md) | Product brief — what to build, why, users, non-functional requirements, out-of-scope items |
-| [`PLAN.md`](PLAN.md) | Technical plan — package layout, schema, endpoints, real-time design, phased build order |
-| [`TECH_STACK.md`](TECH_STACK.md) | Tech choices, the reasoning behind each, and what the project teaches |
-| [`CLAUDE.md`](CLAUDE.md) | Standing working rules for this codebase |
-| [`PASSWORDS.md`](PASSWORDS.md) | Seeded demo login credentials |
+
+| Document                         | Contents                                                                                    |
+| ---------------------------------- | --------------------------------------------------------------------------------------------- |
+| [`PRD.md`](PRD.md)               | Product brief — what to build, why, users, non-functional requirements, out-of-scope items |
+| [`PLAN.md`](PLAN.md)             | Technical plan — package layout, schema, endpoints, real-time design, phased build order   |
+| [`TECH_STACK.md`](TECH_STACK.md) | Tech choices, the reasoning behind each, and what the project teaches                       |
+| [`CLAUDE.md`](CLAUDE.md)         | Standing working rules for this codebase                                                    |
+| [`PASSWORDS.md`](PASSWORDS.md)   | Seeded demo login credentials                                                               |
+
+> # Built a real-time hospital queue management system (Java 21, Spring Boot 3, PostgreSQL, WebSocket/STOMP) that pushes queue and wait-time updates to doctor dashboards and patient portals in under 1 second with zero polling, replacing manual refresh; single source-of-truth queue ordering (priority tier + FIFO) drives dashboard, patient position, and ETA from one query.
