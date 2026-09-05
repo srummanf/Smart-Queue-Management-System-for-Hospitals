@@ -2,6 +2,24 @@
 
 A real-time hospital token-queue web app: staff register patients, doctors work a live queue, and patients track their own token on a no-login page — every screen updated by WebSocket push, never by polling.
 
+![Java](https://img.shields.io/badge/Java-21-ED8B00?logo=openjdk&logoColor=white)
+![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.3.4-6DB33F?logo=springboot&logoColor=white)
+![Maven](https://img.shields.io/badge/Maven-3.9-C71A36?logo=apachemaven&logoColor=white)
+![Spring MVC](https://img.shields.io/badge/Spring%20MVC-Web-6DB33F?logo=spring&logoColor=white)
+![Thymeleaf](https://img.shields.io/badge/Thymeleaf-Server--Side%20Views-005F0F?logo=thymeleaf&logoColor=white)
+![HTML5](https://img.shields.io/badge/HTML5-E34F26?logo=html5&logoColor=white)
+![CSS3](https://img.shields.io/badge/CSS3-1572B6?logo=css3&logoColor=white)
+![JavaScript](https://img.shields.io/badge/JavaScript-Vanilla-F7DF1E?logo=javascript&logoColor=black)
+![WebSocket](https://img.shields.io/badge/WebSocket-STOMP%20%2B%20SockJS-6DB33F?logo=spring&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-Database-4169E1?logo=postgresql&logoColor=white)
+![Spring Data JPA](https://img.shields.io/badge/Spring%20Data%20JPA-Data%20Access-6DB33F?logo=spring&logoColor=white)
+![Hibernate](https://img.shields.io/badge/Hibernate-ORM-59666C?logo=hibernate&logoColor=white)
+![Flyway](https://img.shields.io/badge/Flyway-Migrations-CC0200?logo=flyway&logoColor=white)
+![Spring Security](https://img.shields.io/badge/Spring%20Security-Authentication-6DB33F?logo=springsecurity&logoColor=white)
+![JUnit 5](https://img.shields.io/badge/JUnit%205-Testing-25A162?logo=junit5&logoColor=white)
+![Mockito](https://img.shields.io/badge/Mockito-Mocking-78C257?logo=mockito&logoColor=white)
+![AssertJ](https://img.shields.io/badge/AssertJ-Assertions-0B5FFF?logo=assertj&logoColor=white)
+
 ## Description
 
 Hospitals hand out paper tokens, but a paper token never tells a patient *when* they will be seen, and a printed board cannot reshuffle a doctor's queue when an emergency walks in. This project fixes both:
@@ -14,13 +32,8 @@ Hospitals hand out paper tokens, but a paper token never tells a patient *when* 
 
 It was built as a small, fully-readable **portfolio project**. The goal is a clean codebase that demonstrates sound architecture — real-time updates without an SPA, one source of truth for business rules, mixed authenticated/unauthenticated routes — not scale or hospital-grade robustness. See [`PRD.md`](PRD.md) for the full product brief and [`PLAN.md`](PLAN.md) for the technical plan.
 
-## Badges
 
-![Java](https://img.shields.io/badge/Java-21-orange)
-![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.3.4-brightgreen)
-![Build](https://img.shields.io/badge/build-Maven-blue)
-![Database](https://img.shields.io/badge/database-PostgreSQL-336791)
-![Tests](https://img.shields.io/badge/tests-JUnit%205%20%2B%20Mockito-25A162)
+
 
 > This repository has no CI workflow and no licence file, so no build-status or licence badge is shown. CI is listed under [Roadmap](#roadmap) as a possible future addition.
 
@@ -60,7 +73,6 @@ No screenshots are stored in the repository; the [walkthrough](#run-it-end-to-en
 
 - [Smart Queue Management System for Hospitals](#smart-queue-management-system-for-hospitals)
   - [Description](#description)
-  - [Badges](#badges)
   - [Result](#result)
   - [Where to Start](#where-to-start)
   - [Table of Contents](#table-of-contents)
